@@ -38,7 +38,7 @@ function updateStatus(content, newStatus) {
   return lines.join('\n');
 }
 
-module.exports = async function status(args) {
+async function status(args) {
   // 1. Validate arguments
   if (args.length < 2) {
     console.error('Error: Missing arguments.\n');
@@ -131,4 +131,8 @@ module.exports = async function status(args) {
     console.error('Error updating status:', err.message);
     process.exit(1);
   }
-};
+}
+
+module.exports = status;
+module.exports.updateStatus = updateStatus;
+module.exports.VALID_STATUSES = VALID_STATUSES;
