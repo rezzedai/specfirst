@@ -312,9 +312,9 @@ Contributions welcome! This is an open-source project by [Rezzed AI](https://rez
 
 See [GitHub Issues](https://github.com/rezzedai/specfirst/issues) for open tasks.
 
-## Want More?
+## What's Next?
 
-specfirst scores one plan at a time. [Rezzed Grid-as-a-Service](https://rezzed.ai) runs confidence-scored planning across multi-agent sprints — with automatic decomposition, specialist routing, and drift detection when implementation diverges from spec.
+More tools coming from the @rezzedai toolkit. See [rezzed.ai](https://rezzed.ai) for updates.
 
 ## License
 
