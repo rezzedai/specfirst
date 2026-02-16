@@ -34,6 +34,18 @@ if (command === '--version' || command === '-v') {
   process.exit(0);
 }
 
+if (command === 'spec') {
+  console.error('The "spec" command runs inside Claude Code, not from the CLI.');
+  console.error('');
+  console.error('To create specs:');
+  console.error('  1. Copy SKILL.md to .claude/skills/spec.md');
+  console.error('  2. Use /spec in Claude Code');
+  console.error('');
+  console.error('CLI commands: init, list, review, status');
+  console.error('Run "specfirst --help" for details.');
+  process.exit(1);
+}
+
 if (!commands[command]) {
   console.error(`Unknown command: ${command}`);
   console.error('Run "specfirst --help" for usage.');

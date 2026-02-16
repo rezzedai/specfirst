@@ -80,10 +80,10 @@ module.exports = async function init(args) {
     console.log('\n✅ specfirst initialized successfully!\n');
     console.log('Next steps:');
     console.log('  1. Review configuration: .specfirst/config.yaml');
-    console.log('  2. Create your first spec: npx specfirst spec "Add user login"');
+    console.log('  2. Create specs using /spec in Claude Code');
+    console.log('     (Copy SKILL.md to .claude/skills/spec.md first)');
     console.log('  3. List specs: npx specfirst list');
-    console.log('\nFor Claude Code users:');
-    console.log('  Use /spec in Claude to trigger spec creation');
+    console.log('  4. Review a spec: npx specfirst review <spec-file>');
 
   } catch (err) {
     console.error('Error initializing specfirst:', err.message);

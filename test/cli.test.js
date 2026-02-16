@@ -55,6 +55,18 @@ describe('CLI interface', () => {
   });
 
   describe('unknown command handling', () => {
+    it('should show helpful message when spec command is used', () => {
+      try {
+        execSync(`node "${CLI_PATH}" spec "test"`, { encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('Claude Code'));
+        assert.ok(output.includes('SKILL.md'));
+      }
+    });
+
     it('should exit with code 1 for unknown command', () => {
       try {
         execSync(`node "${CLI_PATH}" unknown-command`, { encoding: 'utf8', stdio: 'pipe' });

@@ -52,11 +52,13 @@ Or if installed via npx:
 mkdir -p .claude/skills && curl -o .claude/skills/spec.md https://raw.githubusercontent.com/rezzedai/specfirst/main/SKILL.md
 ```
 
-3. **Use in Claude Code:**
+3. **Create specs in Claude Code:**
 
 ```
 /spec Add a /health endpoint that returns JSON with status and uptime
 ```
+
+> **Note:** `/spec` is a Claude Code skill, not a CLI command. It runs inside Claude Code sessions. The CLI commands (`init`, `list`, `review`, `status`) manage specs after they're created.
 
 Claude will analyze your codebase, decompose the task, score each step, and write a structured spec to `.specfirst/specs/`.
 
