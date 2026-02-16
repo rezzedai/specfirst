@@ -1,0 +1,25 @@
+# specfirst configuration
+# See: https://github.com/rezzedai/specfirst
+
+# Confidence thresholds
+thresholds:
+  proceed: 0.8       # Green — implement autonomously
+  review: 0.5        # Yellow — flagged for human review (below = red/blocked)
+
+# Scoring weights (must sum to 1.0)
+weights:
+  requirement_clarity: 0.25
+  implementation_certainty: 0.25
+  risk_awareness: 0.25
+  dependency_clarity: 0.25
+
+# Auto-scope: lightweight spec for trivial tasks
+auto_scope:
+  enabled: true
+  max_steps_for_lightweight: 2
+  min_score_for_lightweight: 0.9
+
+# Output
+output:
+  directory: ".specfirst/specs"
+  format: "markdown"
