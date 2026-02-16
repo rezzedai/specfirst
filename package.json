@@ -1,0 +1,33 @@
+{
+  "name": "@rezzedai/specfirst",
+  "version": "0.1.0",
+  "description": "Plan-before-build with confidence scoring for Claude Code",
+  "main": "src/cli/index.js",
+  "bin": {
+    "specfirst": "./bin/specfirst.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["claude-code", "planning", "confidence-scoring", "spec", "ai-coding"],
+  "author": "Rezzed AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rezzedai/specfirst.git"
+  },
+  "homepage": "https://github.com/rezzedai/specfirst#readme",
+  "bugs": {
+    "url": "https://github.com/rezzedai/specfirst/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "SKILL.md",
+    "LICENSE",
+    "README.md"
+  ]
+}
