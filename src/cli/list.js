@@ -84,7 +84,7 @@ function formatRow(file, status, confidence, created) {
   ].join('  ');
 }
 
-module.exports = async function list(args) {
+async function list(args) {
   const cwd = process.cwd();
   const specsDir = path.join(cwd, '.specfirst', 'specs');
 
@@ -152,4 +152,8 @@ module.exports = async function list(args) {
     console.error('Error listing specs:', err.message);
     process.exit(1);
   }
-};
+}
+
+module.exports = list;
+module.exports.parseSpecMetadata = parseSpecMetadata;
+module.exports.getConfidenceEmoji = getConfidenceEmoji;

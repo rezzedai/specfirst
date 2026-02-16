@@ -131,7 +131,7 @@ function formatDimensionName(dim) {
   return dim.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
-module.exports = async function review(args) {
+async function review(args) {
   if (args.length === 0) {
     console.error('Error: No spec file specified.\n');
     console.error('Usage: npx specfirst review <spec-file>\n');
@@ -250,4 +250,9 @@ module.exports = async function review(args) {
     console.error('Error reviewing spec:', err.message);
     process.exit(1);
   }
-};
+}
+
+module.exports = review;
+module.exports.parseSpec = parseSpec;
+module.exports.getScoreEmoji = getScoreEmoji;
+module.exports.formatDimensionName = formatDimensionName;

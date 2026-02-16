@@ -1,0 +1,7 @@
+test/
+.github/
+.githooks/
+.specfirst/
+examples/
+.gitignore
+.npmignore
