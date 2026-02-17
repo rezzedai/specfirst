@@ -70,7 +70,7 @@ module.exports = async function init(args) {
       await fs.access(claudeSkillsDir);
       console.log('\n📋 Claude Code project detected!');
       console.log('   To enable the /spec skill, copy the skill file:');
-      console.log('   cp node_modules/@rezzedai/specfirst/SKILL.md .claude/skills/spec.md');
+      console.log('   cp node_modules/@rezzed.ai/specfirst/SKILL.md .claude/skills/spec.md');
       console.log('   (or create a symlink if you prefer)');
     } catch {
       // Not a Claude Code project, skip

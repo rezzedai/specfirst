@@ -1,8 +1,8 @@
-# @rezzedai/specfirst
+# @rezzed.ai/specfirst
 
 > Confidence-scored specifications for Claude Code. Plan before you build. Know what you don't know.
 
-[![npm version](https://img.shields.io/npm/v/@rezzedai/specfirst.svg)](https://www.npmjs.com/package/@rezzedai/specfirst)
+[![npm version](https://img.shields.io/npm/v/@rezzed.ai/specfirst.svg)](https://www.npmjs.com/package/@rezzed.ai/specfirst)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Why
@@ -18,13 +18,13 @@ The result: fewer rewrites, better estimates, and honest uncertainty instead of 
 ### Installation
 
 ```bash
-npm install -g @rezzedai/specfirst
+npm install -g @rezzed.ai/specfirst
 ```
 
 Or use without installing:
 
 ```bash
-npx @rezzedai/specfirst init
+npx @rezzed.ai/specfirst init
 ```
 
 ### Setup
@@ -43,7 +43,7 @@ This creates `.specfirst/` with default configuration.
 Copy the skill definition to your Claude Code skills directory:
 
 ```bash
-cp node_modules/@rezzedai/specfirst/SKILL.md .claude/skills/spec.md
+cp node_modules/@rezzed.ai/specfirst/SKILL.md .claude/skills/spec.md
 ```
 
 Or if installed via npx:
@@ -316,7 +316,7 @@ See [GitHub Issues](https://github.com/rezzedai/specfirst/issues) for open tasks
 
 ## What's Next?
 
-More tools coming from the @rezzedai toolkit. See [rezzed.ai](https://rezzed.ai) for updates.
+More tools coming from the @rezzed.ai toolkit. See [rezzed.ai](https://rezzed.ai) for updates.
 
 ## License
 
