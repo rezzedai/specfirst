@@ -1,5 +1,5 @@
 {
-  "name": "@rezzedai/specfirst",
+  "name": "@rezzed.ai/specfirst",
   "version": "0.1.0",
   "description": "Plan-before-build with confidence scoring for Claude Code",
   "main": "src/cli/index.js",
