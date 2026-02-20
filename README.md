@@ -280,6 +280,14 @@ output:
 
 Both are valuable. **superpowers** is a comprehensive framework for AI-assisted development. **specfirst** is a focused tool for confidence-aware planning. Use them together if you want both process and measurement.
 
+## Design Constraints
+
+- Planning is not optional — confidence scores gate execution
+- Geometric mean scoring penalizes catastrophic uncertainty in any single dimension
+- Red-scored steps require human decision — no autonomous override
+- Trivial tasks get lightweight specs, not no specs
+- Zero external dependencies — pure Node.js implementation
+
 ## Why Geometric Mean?
 
 The overall plan confidence uses geometric mean, not arithmetic mean. Here's why:
@@ -325,4 +333,4 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-Built by [Rezzed.ai](https://rezzed.ai)
+**Built by:** [RezzedAI](https://rezzed.ai) — Infrastructure for bounded multi-agent systems.
