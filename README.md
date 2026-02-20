@@ -4,6 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@rezzed.ai/specfirst.svg)](https://www.npmjs.com/package/@rezzed.ai/specfirst)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
 
 ## Why
 
@@ -324,4 +325,4 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-Built by [Rezzed](https://rezzed.ai) — the AI product studio.
+Built by [Rezzed.ai](https://rezzed.ai)
