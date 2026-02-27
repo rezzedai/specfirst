@@ -23,11 +23,15 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "bin/",
     "src/",
     "SKILL.md",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "examples/"
   ]
 }
