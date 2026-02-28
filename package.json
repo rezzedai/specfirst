@@ -2,7 +2,7 @@
   "name": "@rezzedai/specfirst",
   "version": "0.1.0",
   "description": "Plan-before-build with confidence scoring for Claude Code",
-  "main": "src/cli/index.js",
+  "main": "bin/specfirst.js",
   "bin": {
     "specfirst": "./bin/specfirst.js"
   },
