@@ -5,9 +5,15 @@
  * Zero dependencies, Node.js built-in test runner only.
  */
 
-const { describe, it } = require('node:test');
+const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('fs/promises');
+const path = require('path');
+const os = require('os');
+const { execSync } = require('child_process');
 const { updateStatus, VALID_STATUSES } = require('../src/cli/status.js');
+
+const CLI_PATH = path.join(__dirname, '../bin/specfirst.js');
 
 describe('status command', () => {
   describe('updateStatus', () => {
@@ -93,6 +99,89 @@ Status field in middle.
 
     it('should have exactly 5 statuses', () => {
       assert.equal(VALID_STATUSES.length, 5);
+    });
+  });
+
+  describe('integration tests', () => {
+    let tempDir;
+
+    beforeEach(async () => {
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'specfirst-test-'));
+      execSync(`node "${CLI_PATH}" init`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+    });
+
+    afterEach(async () => {
+      if (tempDir) {
+        await fs.rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('should accept case-insensitive status input', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      await fs.writeFile(path.join(specsDir, 'test.md'), `# Spec: Test
+**Status:** draft
+**Created:** 2026-02-15
+`, 'utf8');
+
+      // Test uppercase input
+      const output1 = execSync(`node "${CLI_PATH}" status test.md APPROVED`, { cwd: tempDir, encoding: 'utf8' });
+      assert.ok(output1.includes('draft → approved'));
+
+      // Verify file was updated with lowercase
+      const content1 = await fs.readFile(path.join(specsDir, 'test.md'), 'utf8');
+      assert.ok(content1.includes('**Status:** approved'));
+
+      // Test mixed case input
+      const output2 = execSync(`node "${CLI_PATH}" status test.md ImPlEmEnTiNg`, { cwd: tempDir, encoding: 'utf8' });
+      assert.ok(output2.includes('approved → implementing'));
+    });
+
+    it('should exit with code 1 when missing arguments', async () => {
+      try {
+        execSync(`node "${CLI_PATH}" status`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('Missing arguments'));
+        assert.ok(output.includes('Usage:'));
+      }
+    });
+
+    it('should exit with code 1 when only file provided (missing status)', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      await fs.writeFile(path.join(specsDir, 'test.md'), `# Spec: Test
+**Status:** draft
+`, 'utf8');
+
+      try {
+        execSync(`node "${CLI_PATH}" status test.md`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('Missing arguments'));
+      }
+    });
+
+    it('should exit with code 1 for invalid status', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      await fs.writeFile(path.join(specsDir, 'test.md'), `# Spec: Test
+**Status:** draft
+`, 'utf8');
+
+      try {
+        execSync(`node "${CLI_PATH}" status test.md invalid-status`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('Invalid status'));
+        assert.ok(output.includes('Valid statuses:'));
+      }
     });
   });
 });
