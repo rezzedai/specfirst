@@ -5,9 +5,15 @@
  * Zero dependencies, Node.js built-in test runner only.
  */
 
-const { describe, it } = require('node:test');
+const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('fs/promises');
+const path = require('path');
+const os = require('os');
+const { execSync } = require('child_process');
 const { parseSpecMetadata, getConfidenceEmoji } = require('../src/cli/list.js');
+
+const CLI_PATH = path.join(__dirname, '../bin/specfirst.js');
 
 describe('list command', () => {
   describe('parseSpecMetadata', () => {
@@ -88,6 +94,90 @@ Some context here.
       assert.equal(getConfidenceEmoji(0.0), '🔴');
       assert.equal(getConfidenceEmoji(0.3), '🔴');
       assert.equal(getConfidenceEmoji(0.49), '🔴');
+    });
+  });
+
+  describe('integration tests', () => {
+    let tempDir;
+
+    beforeEach(async () => {
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'specfirst-test-'));
+      // Initialize specfirst in temp directory
+      execSync(`node "${CLI_PATH}" init`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+    });
+
+    afterEach(async () => {
+      if (tempDir) {
+        await fs.rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('should handle empty specs directory', async () => {
+      const output = execSync(`node "${CLI_PATH}" list`, { cwd: tempDir, encoding: 'utf8' });
+
+      assert.ok(output.includes('No specs found'));
+      assert.ok(output.includes('Create your first spec'));
+    });
+
+    it('should fail without .specfirst/ directory', async () => {
+      const uninitializedDir = await fs.mkdtemp(path.join(os.tmpdir(), 'specfirst-uninit-'));
+
+      try {
+        execSync(`node "${CLI_PATH}" list`, { cwd: uninitializedDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('.specfirst/specs/ not found'));
+      } finally {
+        await fs.rm(uninitializedDir, { recursive: true, force: true });
+      }
+    });
+
+    it('should sort by date (newest first)', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      // Create specs with different dates
+      await fs.writeFile(path.join(specsDir, 'old-spec.md'), `# Spec: Old Spec
+**Created:** 2026-01-01T10:00:00Z
+**Status:** draft
+**Overall Confidence:** 0.75
+`, 'utf8');
+
+      await fs.writeFile(path.join(specsDir, 'new-spec.md'), `# Spec: New Spec
+**Created:** 2026-02-15T10:00:00Z
+**Status:** draft
+**Overall Confidence:** 0.80
+`, 'utf8');
+
+      const output = execSync(`node "${CLI_PATH}" list`, { cwd: tempDir, encoding: 'utf8' });
+
+      // New spec should appear before old spec
+      const newSpecIndex = output.indexOf('new-spec.md');
+      const oldSpecIndex = output.indexOf('old-spec.md');
+
+      assert.ok(newSpecIndex > 0, 'Should find new-spec.md');
+      assert.ok(oldSpecIndex > 0, 'Should find old-spec.md');
+      assert.ok(newSpecIndex < oldSpecIndex, 'new-spec.md should appear before old-spec.md');
+    });
+
+    it('should filter non-.md files', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      // Create .md and non-.md files
+      await fs.writeFile(path.join(specsDir, 'valid-spec.md'), `# Spec: Valid
+**Status:** draft
+`, 'utf8');
+
+      await fs.writeFile(path.join(specsDir, 'not-a-spec.txt'), 'This should be ignored', 'utf8');
+      await fs.writeFile(path.join(specsDir, 'README'), 'This should also be ignored', 'utf8');
+
+      const output = execSync(`node "${CLI_PATH}" list`, { cwd: tempDir, encoding: 'utf8' });
+
+      assert.ok(output.includes('valid-spec.md'));
+      assert.ok(!output.includes('not-a-spec.txt'));
+      assert.ok(!output.includes('README'));
+      assert.ok(output.includes('Total: 1 spec'));
     });
   });
 });

@@ -5,11 +5,15 @@
  * Zero dependencies, Node.js built-in test runner only.
  */
 
-const { describe, it } = require('node:test');
+const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs/promises');
 const path = require('path');
+const os = require('os');
+const { execSync } = require('child_process');
 const { parseSpec, getScoreEmoji, formatDimensionName } = require('../src/cli/review.js');
+
+const CLI_PATH = path.join(__dirname, '../bin/specfirst.js');
 
 describe('review command', () => {
   describe('parseSpec', () => {
@@ -123,6 +127,100 @@ Some context here.
 
     it('should convert dependency_clarity to Dependency Clarity', () => {
       assert.equal(formatDimensionName('dependency_clarity'), 'Dependency Clarity');
+    });
+  });
+
+  describe('integration tests', () => {
+    let tempDir;
+
+    beforeEach(async () => {
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'specfirst-test-'));
+      execSync(`node "${CLI_PATH}" init`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+    });
+
+    afterEach(async () => {
+      if (tempDir) {
+        await fs.rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('should exit with code 1 when missing arguments', async () => {
+      try {
+        execSync(`node "${CLI_PATH}" review`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('No spec file specified'));
+        assert.ok(output.includes('Usage:'));
+      }
+    });
+
+    it('should exit with code 1 for nonexistent spec file', async () => {
+      try {
+        execSync(`node "${CLI_PATH}" review nonexistent.md`, { cwd: tempDir, encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('Should have thrown an error');
+      } catch (err) {
+        assert.equal(err.status, 1);
+        const output = err.stderr + err.stdout;
+        assert.ok(output.includes('Spec file not found'));
+      }
+    });
+
+    it('should append .md extension if not provided', async () => {
+      const specsDir = path.join(tempDir, '.specfirst', 'specs');
+
+      await fs.writeFile(path.join(specsDir, 'test-spec.md'), `# Spec: Test Spec
+**Status:** draft
+**Created:** 2026-02-15
+**Overall Confidence:** 0.80
+
+## Context
+Test content
+
+## Scoring Summary
+
+| Step | Score | RC | IC | RA | DC | Status |
+|------|-------|----|----|----|----|--------|
+| Step 1 | 0.80 | 0.80 | 0.80 | 0.80 | 0.80 | 🟢 |
+
+## Implementation Plan
+Details here.
+`, 'utf8');
+
+      // Call review without .md extension
+      const output = execSync(`node "${CLI_PATH}" review test-spec`, { cwd: tempDir, encoding: 'utf8' });
+
+      assert.ok(output.includes('Spec Review: Test Spec'));
+      assert.ok(output.includes('Overall Confidence: 0.80'));
+    });
+
+    it('should stop parsing scoring table at next ## section', async () => {
+      const content = `# Spec: Test Spec
+**Status:** draft
+**Created:** 2026-02-15
+**Overall Confidence:** 0.75
+
+## Scoring Summary
+
+| Step | Score | RC | IC | RA | DC | Status |
+|------|-------|----|----|----|----|--------|
+| Step 1 | 0.80 | 0.80 | 0.80 | 0.80 | 0.80 | 🟢 |
+| Step 2 | 0.70 | 0.70 | 0.70 | 0.70 | 0.70 | 🟡 |
+
+## Implementation Plan
+
+| This | Should | Not | Be | Parsed | As | Steps |
+|------|--------|-----|----|----|----|----|
+| Data | 0.90 | 0.90 | 0.90 | 0.90 | 0.90 | 🟢 |
+`;
+
+      const spec = parseSpec(content);
+
+      // Should only parse 2 steps from Scoring Summary section
+      assert.equal(spec.steps.length, 2);
+      assert.equal(spec.steps[0].step, 'Step 1');
+      assert.equal(spec.steps[1].step, 'Step 2');
     });
   });
 });
